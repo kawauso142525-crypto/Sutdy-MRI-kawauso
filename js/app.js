@@ -31,9 +31,10 @@ const exportButton =
 const importInput =
   document.getElementById("importInput");
 
-function refreshFileSelect() {
+async function refreshFileSelect() {
 
-  const fileNames = getFileNames();
+  const fileNames =
+    await getFileNames();
 
   fileSelect.innerHTML = "";
 
@@ -91,7 +92,7 @@ newFileButton.addEventListener(
 
     currentFileName = fileName;
 
-    refreshFileSelect();
+    await refreshFileSelect();
 
     await loadCurrentFile();
   }
@@ -112,7 +113,7 @@ deleteFileButton.addEventListener(
     deleteFile(currentFileName);
 
     const fileNames =
-      getFileNames();
+      await getFileNames();
 
     if (fileNames.length === 0) {
 
@@ -139,7 +140,7 @@ deleteFileButton.addEventListener(
         );
     }
 
-    refreshFileSelect();
+    await refreshFileSelect();
 
     renderTable(tableData);
   }
@@ -261,7 +262,7 @@ importInput.addEventListener(
 async function initializeApp() {
 
   const fileNames =
-    getFileNames();
+    await getFileNames();
 
   if (fileNames.length === 0) {
 
@@ -284,7 +285,7 @@ async function initializeApp() {
       );
   }
 
-  refreshFileSelect();
+  await refreshFileSelect();
 
   renderTable(tableData);
 }

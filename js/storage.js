@@ -104,11 +104,52 @@ async function saveFile(
   }
 }
 
-function getFileNames() {
+async function getFileNames() {
 
-  return Object.keys(
-    loadAllFiles()
-  );
+  const localFiles =
+    Object.keys(
+      loadAllFiles()
+    );
+
+  try {
+
+    const {
+      collection,
+      getDocs
+    } = await import(
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+    );
+
+    const querySnapshot =
+      await getDocs(
+        collection(
+          window.firebaseDB,
+          "files"
+        )
+      );
+
+    const firebaseFiles = [];
+
+    querySnapshot.forEach((doc) => {
+
+      firebaseFiles.push(doc.id);
+    });
+
+    const mergedFiles = [
+      ...new Set([
+        ...localFiles,
+        ...firebaseFiles
+      ])
+    ];
+
+    return mergedFiles;
+  }
+  catch (error) {
+
+    console.error(error);
+
+    return localFiles;
+  }
 }
 
 function deleteFile(fileName) {
