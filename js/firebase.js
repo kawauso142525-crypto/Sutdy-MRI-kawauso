@@ -1,17 +1,60 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+async function loadFile(fileName) {
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC-Qon2VZv-heyBTBYLCrpwC_C5MDMrNws",
-  authDomain: "study-mri.firebaseapp.com",
-  projectId: "study-mri",
-  storageBucket: "study-mri.firebasestorage.app",
-  messagingSenderId: "231073050806",
-  appId: "1:231073050806:web:7d68cdc26e940b54cd7617"
-};
+  const allFiles = loadAllFiles();
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  if (allFiles[fileName]) {
+    return allFiles[fileName];
+  }
 
-window.firebaseDB = db;
-window.firebaseFunctions = { doc, setDoc, getDoc, deleteDoc };
+  const { doc, getDoc } = window.firebaseFunctions;
+
+  const docRef = doc(
+    window.firebaseDB,
+    "files",
+    fileName
+  );
+
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const data = docSnap.data().tableData;
+
+    allFiles[fileName] = data;
+    saveAllFiles(allFiles);
+
+    return data;
+  }
+
+  return null;
+}
+
+async function saveFile(fileName, data) {
+
+  const allFiles = loadAllFiles();
+
+  allFiles[fileName] = data;
+
+  saveAllFiles(allFiles);
+
+  const { doc, setDoc } = window.firebaseFunctions;
+
+  await setDoc(
+    doc(window.firebaseDB, "files", fileName),
+    { tableData: data }
+  );
+}
+
+async function deleteFile(fileName) {
+
+  const allFiles = loadAllFiles();
+
+  delete allFiles[fileName];
+
+  saveAllFiles(allFiles);
+
+  const { doc, deleteDoc } = window.firebaseFunctions;
+
+  await deleteDoc(
+    doc(window.firebaseDB, "files", fileName)
+  );
+}
