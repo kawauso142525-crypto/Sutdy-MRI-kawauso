@@ -1,0 +1,40 @@
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+.editable {
+  position: relative;
+}
+
+.suggestion-box {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  width: 100%;
+  z-index: 100;
+}
+
+.suggestion-item {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background: #eee;
+}
+button {
+  margin-bottom: 15px;
+  padding: 8px 12px;
+  cursor: pointer;
+}

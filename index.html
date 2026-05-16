@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Task App</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <h1>タスク管理</h1>
+
+  <button id="addColumnButton">
+  ＋ データ追加
+  </button>
+  <table id="taskTable">
+
+    <tr>
+      <th></th>
+      <th>データ1</th>
+      <th>データ2</th>
+      <th>データ3</th>
+    </tr>
+
+    <tr>
+      <th>対象</th>
+      <td class="editable">本</td>
+      <td class="editable">部屋</td>
+      <td class="editable">PC</td>
+    </tr>
+
+    <tr>
+      <th>タスク</th>
+      <td class="editable">読む</td>
+      <td class="editable">掃除</td>
+      <td class="editable">修理</td>
+    </tr>
+
+    <tr>
+      <th>状態</th>
+      <td class="editable">未着手</td>
+      <td class="editable">完了</td>
+      <td class="editable">進行中</td>
+    </tr>
+
+    <tr>
+      <th>タグ</th>
+      <td class="editable">趣味</td>
+      <td class="editable">家</td>
+      <td class="editable">仕事</td>
+    </tr>
+
+  </table>
+
+  <script src="js/storage.js"></script>
+  <script src="js/suggestion.js"></script>
+  <script src="js/table.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>
