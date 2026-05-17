@@ -3,40 +3,48 @@ let currentFileName = "default";
 let tableData = [];
 
 /* =========================
-   Googleログイン
+   ログイン
 ========================= */
 async function login() {
-  const { signInWithPopup } = window.firebaseAuth;
+  const auth = window.firebaseAuth;
   const provider = window.firebaseProvider;
 
-  await signInWithPopup(window.firebaseAuth, provider);
+  const { signInWithPopup } = window.firebaseAuthLib;
+
+  await signInWithPopup(auth, provider);
 }
 
 /* =========================
    認証監視
 ========================= */
-window.firebaseAuth.onAuthStateChanged(async (user) => {
+window.firebaseAuthLib.onAuthStateChanged(
+  window.firebaseAuth,
+  async (user) => {
 
-  if (!user) {
-    await login();
-    return;
+    if (!user) {
+      await login();
+      return;
+    }
+
+    console.log("ログイン:", user.uid);
+
+    tableData = await loadFile(currentFileName);
+
+    if (!tableData || !tableData.length) {
+      tableData = [["項目", "列1"], ["", ""]];
+    }
+
+    renderTable(tableData);
+    refreshFiles();
   }
-
-  console.log("ログイン:", user.uid);
-
-  tableData = await loadFile(currentFileName);
-
-  renderTable(tableData);
-  await refreshFiles();
-});
+);
 
 /* =========================
    初期化
 ========================= */
-async function init() {
+function init() {
   console.log("app start");
 }
-
 init();
 
 /* =========================
@@ -60,12 +68,15 @@ async function refreshFiles() {
 }
 
 /* =========================
-   イベント
+   保存
 ========================= */
 document.getElementById("saveButton").onclick = () => {
   saveFile(currentFileName, tableData);
 };
 
+/* =========================
+   新規ファイル
+========================= */
 document.getElementById("newFileButton").onclick = async () => {
   const name = prompt("ファイル名");
   if (!name) return;
@@ -74,26 +85,36 @@ document.getElementById("newFileButton").onclick = async () => {
   tableData = [["項目", "列1"], ["", ""]];
 
   await saveFile(name, tableData);
+
   refreshFiles();
   renderTable(tableData);
 };
 
+/* =========================
+   削除
+========================= */
 document.getElementById("deleteFileButton").onclick = async () => {
   await deleteFile(currentFileName);
 };
 
+/* =========================
+   行追加
+========================= */
 document.getElementById("addRowButton").onclick = () => {
   addNewRow(tableData);
   renderTable(tableData);
 };
 
+/* =========================
+   列追加
+========================= */
 document.getElementById("addColumnButton").onclick = () => {
   addNewColumn(tableData);
   renderTable(tableData);
 };
 
 /* =========================
-   切り替え
+   ファイル切替
 ========================= */
 document.getElementById("fileSelect").onchange = async (e) => {
   currentFileName = e.target.value;
