@@ -16,10 +16,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyC-Qon2VZv-heyBTBYLCrpwC_C5MDMrNws",
+  authDomain: "study-mri.firebaseapp.com",
+  projectId: "study-mri",
+  messagingSenderId: "231073050806",
+  appId: "1:231073050806:web:7d68cdc26e940b54cd7617"
 };
 
 const app = initializeApp(firebaseConfig);
