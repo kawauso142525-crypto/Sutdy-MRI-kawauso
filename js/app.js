@@ -1,35 +1,55 @@
 
 let currentFileName = "default";
+let tableData = [];
 
-let tableData = [
-  ["項目", "列1"],
-  ["データ", ""]
-];
+/* =========================
+   Googleログイン
+========================= */
+async function login() {
+  const { signInWithPopup } = window.firebaseAuth;
+  const provider = window.firebaseProvider;
+
+  await signInWithPopup(window.firebaseAuth, provider);
+}
+
+/* =========================
+   認証監視
+========================= */
+window.firebaseAuth.onAuthStateChanged(async (user) => {
+
+  if (!user) {
+    await login();
+    return;
+  }
+
+  console.log("ログイン:", user.uid);
+
+  tableData = await loadFile(currentFileName);
+
+  renderTable(tableData);
+  await refreshFiles();
+});
 
 /* =========================
    初期化
 ========================= */
 async function init() {
-  tableData = await loadFile(currentFileName);
-
-  if (!tableData || !tableData.length) {
-    tableData = [["項目", "列1"], ["", ""]];
-  }
-
-  renderTable(tableData);
-  await refreshFiles();
+  console.log("app start");
 }
+
+init();
 
 /* =========================
    ファイル一覧更新
 ========================= */
 async function refreshFiles() {
-  const fileNames = await getFileNames();
   const select = document.getElementById("fileSelect");
 
   select.innerHTML = "";
 
-  fileNames.forEach(name => {
+  const files = getFileNames();
+
+  files.forEach(name => {
     const opt = document.createElement("option");
     opt.value = name;
     opt.textContent = name;
@@ -40,84 +60,52 @@ async function refreshFiles() {
 }
 
 /* =========================
-   新規ファイル
+   イベント
 ========================= */
+document.getElementById("saveButton").onclick = () => {
+  saveFile(currentFileName, tableData);
+};
+
 document.getElementById("newFileButton").onclick = async () => {
-  const name = prompt("ファイル名を入力してください");
+  const name = prompt("ファイル名");
   if (!name) return;
 
   currentFileName = name;
   tableData = [["項目", "列1"], ["", ""]];
 
-  await saveFile(currentFileName, tableData);
-
-  await refreshFiles();
+  await saveFile(name, tableData);
+  refreshFiles();
   renderTable(tableData);
 };
 
-/* =========================
-   ファイル削除
-========================= */
 document.getElementById("deleteFileButton").onclick = async () => {
-  if (!confirm("削除しますか？")) return;
-
   await deleteFile(currentFileName);
-
-  tableData = [["項目", "列1"], ["", ""]];
-
-  await refreshFiles();
-  renderTable(tableData);
 };
 
-/* =========================
-   手動保存
-========================= */
-document.getElementById("saveButton").onclick = async () => {
-  await saveFile(currentFileName, tableData);
-  alert("保存しました");
-};
-
-/* =========================
-   行追加
-========================= */
 document.getElementById("addRowButton").onclick = () => {
   addNewRow(tableData);
   renderTable(tableData);
-  autoSaveFile(currentFileName, tableData);
 };
 
-/* =========================
-   列追加
-========================= */
 document.getElementById("addColumnButton").onclick = () => {
   addNewColumn(tableData);
   renderTable(tableData);
-  autoSaveFile(currentFileName, tableData);
 };
 
 /* =========================
-   ファイル切り替え
+   切り替え
 ========================= */
 document.getElementById("fileSelect").onchange = async (e) => {
   currentFileName = e.target.value;
 
   tableData = await loadFile(currentFileName);
 
-  if (!tableData || !tableData.length) {
-    tableData = [["項目", "列1"], ["", ""]];
-  }
-
   renderTable(tableData);
 };
 
 /* =========================
-   🔥 自動保存（入力監視）
+   自動保存
 ========================= */
 document.addEventListener("input", () => {
   autoSaveFile(currentFileName, tableData);
 });
-
-/* =========================
-   初期実行
-========================= */
-init();

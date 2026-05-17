@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
   getFirestore,
   doc,
@@ -7,19 +8,31 @@ import {
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyC-Qon2VZv-heyBTBYLCrpwC_C5MDMrNws",
-  authDomain: "study-mri.firebaseapp.com",
-  projectId: "study-mri",
-  messagingSenderId: "231073050806",
-  appId: "1:231073050806:web:7d68cdc26e940b54cd7617"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
 // グローバル公開
 window.firebaseDB = db;
+window.firebaseAuth = auth;
+window.firebaseProvider = provider;
+
 window.firebaseFunctions = {
   doc,
   setDoc,
