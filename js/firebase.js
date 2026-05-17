@@ -21,14 +21,14 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 /* Firebase設定 */
 const firebaseConfig = {
 
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyC-Qon2VZv-heyBTBYLCrpwC_C5MDMrNws",
 
   authDomain:
-    "YOUR_PROJECT.firebaseapp.com",
+    "study-mri.firebaseapp.com",
 
-  projectId: "YOUR_PROJECT",
+  projectId: "study-mri",
 
-  appId: "YOUR_APP_ID"
+  appId: "1:231073050806:web:7d68cdc26e940b54cd7617"
 
 };
 
