@@ -1,5 +1,3 @@
-```javascript id="table_latest"
-
 function renderTable(tableData) {
 
   const container =
@@ -128,5 +126,3 @@ function deleteLastColumn(tableData) {
   });
 
 }
-
-```
