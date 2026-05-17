@@ -34,18 +34,9 @@ function saveAllFiles(allFiles) {
 
 /* =========================
    ファイル読み込み
+   🔥 Firestore優先
 ========================= */
 async function loadFile(fileName) {
-
-  /* ローカル優先 */
-  const allFiles =
-    loadAllFiles();
-
-  if (allFiles[fileName]) {
-
-    return allFiles[fileName];
-
-  }
 
   /* ログイン確認 */
   const user =
@@ -62,7 +53,8 @@ async function loadFile(fileName) {
 
   }
 
-  const uid = user.uid;
+  const uid =
+    user.uid;
 
   const {
     doc,
@@ -71,6 +63,7 @@ async function loadFile(fileName) {
 
   try {
 
+    /* Firestore取得 */
     const snap =
       await getDoc(
 
@@ -100,10 +93,18 @@ async function loadFile(fileName) {
       const data =
         JSON.parse(raw);
 
-      /* ローカル保存 */
-      allFiles[fileName] = data;
+      /* localStorage更新 */
+      const allFiles =
+        loadAllFiles();
+
+      allFiles[fileName] =
+        data;
 
       saveAllFiles(allFiles);
+
+      console.log(
+        "Firestore読込成功"
+      );
 
       return data;
 
@@ -118,7 +119,14 @@ async function loadFile(fileName) {
 
   }
 
-  return null;
+  /* Firestoreになければlocal */
+  const allFiles =
+    loadAllFiles();
+
+  return (
+    allFiles[fileName]
+    || null
+  );
 
 }
 
@@ -130,11 +138,12 @@ async function saveFile(
   data
 ) {
 
-  /* ローカル保存 */
+  /* localStorage保存 */
   const allFiles =
     loadAllFiles();
 
-  allFiles[fileName] = data;
+  allFiles[fileName] =
+    data;
 
   saveAllFiles(allFiles);
 
@@ -153,7 +162,8 @@ async function saveFile(
 
   }
 
-  const uid = user.uid;
+  const uid =
+    user.uid;
 
   const {
     doc,
@@ -181,9 +191,7 @@ async function saveFile(
 
       {
 
-        /* 🔥 重要
-           JSON文字列化
-        */
+        /* 🔥 Nested arrays対策 */
         tableData:
           JSON.stringify(data)
 
@@ -228,7 +236,7 @@ async function deleteFile(
   fileName
 ) {
 
-  /* ローカル削除 */
+  /* local削除 */
   const allFiles =
     loadAllFiles();
 
@@ -241,9 +249,11 @@ async function deleteFile(
     window.firebaseAuth
       ?.currentUser;
 
-  if (!user) return;
+  if (!user)
+    return;
 
-  const uid = user.uid;
+  const uid =
+    user.uid;
 
   const {
     doc,
@@ -252,6 +262,7 @@ async function deleteFile(
 
   try {
 
+    /* Firestore削除 */
     await deleteDoc(
 
       doc(
@@ -295,4 +306,3 @@ function getFileNames() {
   );
 
 }
-
