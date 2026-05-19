@@ -1,3 +1,6 @@
+let currentFolder =
+  "default";
+
 let currentFileName =
   "default";
 
@@ -36,7 +39,9 @@ async function login() {
 
 }
 
-/* ログインボタン */
+/* =========================
+   ログインボタン
+========================= */
 document
   .getElementById(
     "loginButton"
@@ -57,49 +62,17 @@ window.firebaseAuthLib
 
     async (user) => {
 
-      const userInfo =
-        document.getElementById(
-          "userInfo"
-        );
-
-      if (!user) {
-
-        userInfo.textContent =
-          "未ログイン";
-
+      if (!user)
         return;
 
-      }
+      document
+        .getElementById(
+          "userInfo"
+        )
+        .textContent =
+          user.email;
 
-      userInfo.textContent =
-        "ログイン中: "
-        + user.email;
-
-      console.log(
-        "ログイン:",
-        user.uid
-      );
-
-      tableData =
-        await loadFile(
-          currentFileName
-        );
-
-      if (
-        !tableData
-      ) {
-
-        tableData = [
-
-          ["項目", "列1"],
-
-          ["", ""]
-
-        ];
-
-      }
-
-      renderTable(tableData);
+      await refreshFolders();
 
       await refreshFiles();
 
@@ -108,20 +81,42 @@ window.firebaseAuthLib
   );
 
 /* =========================
-   初期化
+   フォルダ一覧
 ========================= */
-function init() {
+async function refreshFolders() {
 
-  console.log(
-    "app start"
-  );
+  const select =
+    document.getElementById(
+      "folderSelect"
+    );
+
+  select.innerHTML = "";
+
+  const folders =
+    await getFolderNames();
+
+  folders.forEach(folder => {
+
+    const opt =
+      document.createElement(
+        "option"
+      );
+
+    opt.value = folder;
+
+    opt.textContent = folder;
+
+    select.appendChild(opt);
+
+  });
+
+  select.value =
+    currentFolder;
 
 }
 
-init();
-
 /* =========================
-   ファイル一覧更新
+   ファイル一覧
 ========================= */
 async function refreshFiles() {
 
@@ -133,7 +128,9 @@ async function refreshFiles() {
   select.innerHTML = "";
 
   const files =
-    await getFileNames();
+    await getFileNamesByFolder(
+      currentFolder
+    );
 
   files.forEach(name => {
 
@@ -150,29 +147,50 @@ async function refreshFiles() {
 
   });
 
-  select.value =
-    currentFileName;
-
 }
 
 /* =========================
-   保存
+   フォルダ追加
 ========================= */
 document
   .getElementById(
-    "saveButton"
+    "newFolderButton"
   )
   .onclick = async () => {
 
-    await saveFile(
-      currentFileName,
-      tableData
-    );
+    const name =
+      prompt("フォルダ名");
+
+    if (!name)
+      return;
+
+    currentFolder =
+      name;
+
+    await refreshFolders();
+
+    await refreshFiles();
 
   };
 
 /* =========================
-   新規
+   フォルダ変更
+========================= */
+document
+  .getElementById(
+    "folderSelect"
+  )
+  .onchange = async (e) => {
+
+    currentFolder =
+      e.target.value;
+
+    await refreshFiles();
+
+  };
+
+/* =========================
+   新規ファイル
 ========================= */
 document
   .getElementById(
@@ -198,13 +216,39 @@ document
     ];
 
     await saveFile(
+
       name,
-      tableData
+
+      tableData,
+
+      currentFolder
+
     );
 
     await refreshFiles();
 
     renderTable(tableData);
+
+  };
+
+/* =========================
+   保存
+========================= */
+document
+  .getElementById(
+    "saveButton"
+  )
+  .onclick = async () => {
+
+    await saveFile(
+
+      currentFileName,
+
+      tableData,
+
+      currentFolder
+
+    );
 
   };
 
@@ -226,6 +270,27 @@ document
   };
 
 /* =========================
+   ファイル切替
+========================= */
+document
+  .getElementById(
+    "fileSelect"
+  )
+  .onchange = async (e) => {
+
+    currentFileName =
+      e.target.value;
+
+    tableData =
+      await loadFile(
+        currentFileName
+      );
+
+    renderTable(tableData);
+
+  };
+
+/* =========================
    行追加
 ========================= */
 document
@@ -235,6 +300,21 @@ document
   .onclick = () => {
 
     addNewRow(tableData);
+
+    renderTable(tableData);
+
+  };
+
+/* =========================
+   行削除
+========================= */
+document
+  .getElementById(
+    "deleteRowButton"
+  )
+  .onclick = () => {
+
+    deleteLastRow(tableData);
 
     renderTable(tableData);
 
@@ -256,21 +336,15 @@ document
   };
 
 /* =========================
-   切替
+   列削除
 ========================= */
 document
   .getElementById(
-    "fileSelect"
+    "deleteColumnButton"
   )
-  .onchange = async (e) => {
+  .onclick = () => {
 
-    currentFileName =
-      e.target.value;
-
-    tableData =
-      await loadFile(
-        currentFileName
-      );
+    deleteLastColumn(tableData);
 
     renderTable(tableData);
 
@@ -286,48 +360,15 @@ document.addEventListener(
   async () => {
 
     await autoSaveFile(
+
       currentFileName,
-      tableData
+
+      tableData,
+
+      currentFolder
+
     );
 
   }
 
 );
-
-/* =========================
-   行削除
-========================= */
-document
-  .getElementById(
-    "deleteRowButton"
-  )
-  .onclick = () => {
-
-    deleteLastRow(
-      tableData
-    );
-
-    renderTable(
-      tableData
-    );
-
-  };
-
-/* =========================
-   列削除
-========================= */
-document
-  .getElementById(
-    "deleteColumnButton"
-  )
-  .onclick = () => {
-
-    deleteLastColumn(
-      tableData
-    );
-
-    renderTable(
-      tableData
-    );
-
-  };

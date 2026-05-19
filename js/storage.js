@@ -2,7 +2,7 @@ const STORAGE_KEY =
   "multiFileTableData";
 
 /* =========================
-   local全取得
+   local取得
 ========================= */
 function loadAllFiles() {
 
@@ -18,7 +18,7 @@ function loadAllFiles() {
 }
 
 /* =========================
-   local全保存
+   local保存
 ========================= */
 function saveAllFiles(allFiles) {
 
@@ -33,7 +33,7 @@ function saveAllFiles(allFiles) {
 }
 
 /* =========================
-   ファイル読込
+   読込
 ========================= */
 async function loadFile(fileName) {
 
@@ -78,19 +78,7 @@ async function loadFile(fileName) {
       const raw =
         snap.data().tableData;
 
-      const data =
-        JSON.parse(raw);
-
-      /* local更新 */
-      const allFiles =
-        loadAllFiles();
-
-      allFiles[fileName] =
-        data;
-
-      saveAllFiles(allFiles);
-
-      return data;
+      return JSON.parse(raw);
 
     }
 
@@ -103,14 +91,7 @@ async function loadFile(fileName) {
 
   }
 
-  /* local fallback */
-  const allFiles =
-    loadAllFiles();
-
-  return (
-    allFiles[fileName]
-    || null
-  );
+  return null;
 
 }
 
@@ -119,15 +100,20 @@ async function loadFile(fileName) {
 ========================= */
 async function saveFile(
   fileName,
-  data
+  data,
+  folder = "default"
 ) {
 
-  /* local保存 */
   const allFiles =
     loadAllFiles();
 
-  allFiles[fileName] =
-    data;
+  allFiles[fileName] = {
+
+    folder,
+
+    tableData: data
+
+  };
 
   saveAllFiles(allFiles);
 
@@ -166,16 +152,13 @@ async function saveFile(
 
       {
 
-        /* Nested arrays対策 */
+        folder,
+
         tableData:
           JSON.stringify(data)
 
       }
 
-    );
-
-    console.log(
-      "Firestore保存成功"
     );
 
   } catch (error) {
@@ -194,12 +177,14 @@ async function saveFile(
 ========================= */
 async function autoSaveFile(
   fileName,
-  data
+  data,
+  folder
 ) {
 
   await saveFile(
     fileName,
-    data
+    data,
+    folder
   );
 
 }
@@ -210,13 +195,6 @@ async function autoSaveFile(
 async function deleteFile(
   fileName
 ) {
-
-  const allFiles =
-    loadAllFiles();
-
-  delete allFiles[fileName];
-
-  saveAllFiles(allFiles);
 
   const user =
     window.firebaseAuth
@@ -265,9 +243,9 @@ async function deleteFile(
 }
 
 /* =========================
-   Firestore一覧取得
+   フォルダ一覧
 ========================= */
-async function getFileNames() {
+async function getFolderNames() {
 
   const user =
     window.firebaseAuth
@@ -284,45 +262,98 @@ async function getFileNames() {
     getDocs
   } = window.firebaseFunctions;
 
-  try {
+  const querySnapshot =
+    await getDocs(
 
-    const querySnapshot =
-      await getDocs(
+      collection(
 
-        collection(
+        window.firebaseDB,
 
-          window.firebaseDB,
+        "users",
 
-          "users",
+        uid,
 
-          uid,
+        "files"
 
-          "files"
+      )
 
-        )
-
-      );
-
-    const names = [];
-
-    querySnapshot.forEach(doc => {
-
-      names.push(doc.id);
-
-    });
-
-    return names;
-
-  } catch (error) {
-
-    console.error(
-      "getFileNames error:",
-      error
     );
 
-    return [];
+  const folders =
+    new Set();
 
-  }
+  querySnapshot.forEach(doc => {
+
+    const data =
+      doc.data();
+
+    folders.add(
+      data.folder || "default"
+    );
+
+  });
+
+  return [...folders];
 
 }
 
+/* =========================
+   フォルダ別ファイル
+========================= */
+async function getFileNamesByFolder(
+  folder
+) {
+
+  const user =
+    window.firebaseAuth
+      ?.currentUser;
+
+  if (!user)
+    return [];
+
+  const uid =
+    user.uid;
+
+  const {
+    collection,
+    getDocs
+  } = window.firebaseFunctions;
+
+  const querySnapshot =
+    await getDocs(
+
+      collection(
+
+        window.firebaseDB,
+
+        "users",
+
+        uid,
+
+        "files"
+
+      )
+
+    );
+
+  const files = [];
+
+  querySnapshot.forEach(doc => {
+
+    const data =
+      doc.data();
+
+    if (
+      (data.folder || "default")
+      === folder
+    ) {
+
+      files.push(doc.id);
+
+    }
+
+  });
+
+  return files;
+
+}
