@@ -1,5 +1,6 @@
 import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
 
@@ -34,7 +35,8 @@ from
 /* Firebase設定 */
 const firebaseConfig = {
 
-  apiKey: "AIzaSyC-Qon2VZv-heyBTBYLCrpwC_C5MDMrNws",
+  apiKey:
+    "AIzaSyC-Qon2VZv-heyBTBYLCrpwC_C5MDMrNws",
 
   authDomain:
     "study-mri.firebaseapp.com",
@@ -47,8 +49,11 @@ const firebaseConfig = {
 
 };
 
+/* 初期化 */
 const app =
-  initializeApp(firebaseConfig);
+  initializeApp(
+    firebaseConfig
+  );
 
 /* Firestore */
 const db =
@@ -62,9 +67,11 @@ const provider =
   new GoogleAuthProvider();
 
 /* グローバル公開 */
-window.firebaseDB = db;
+window.firebaseDB =
+  db;
 
-window.firebaseAuth = auth;
+window.firebaseAuth =
+  auth;
 
 window.firebaseProvider =
   provider;
@@ -91,4 +98,6 @@ window.firebaseFunctions = {
 
 };
 
-console.log("Firebase ready");
+console.log(
+  "Firebase ready"
+);
