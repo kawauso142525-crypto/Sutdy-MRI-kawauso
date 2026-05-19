@@ -166,7 +166,7 @@ async function refreshFiles() {
   files =
     files.filter(
       name =>
-        name !== "__init__"
+        name !== "_folder_init"
     );
 
   /* ファイル0件 */
@@ -261,7 +261,7 @@ document
     /* ダミーファイル */
     await window.saveFile(
 
-      "__init__",
+      "_folder_init__",
 
       [
 
