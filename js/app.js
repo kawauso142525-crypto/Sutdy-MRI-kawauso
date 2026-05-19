@@ -2,7 +2,7 @@ let currentFolder =
   "default";
 
 let currentFileName =
-  "default";
+  "";
 
 let tableData = [];
 
@@ -156,12 +156,20 @@ async function refreshFiles() {
 
   select.innerHTML = "";
 
-  const files =
+  let files =
     await window
       .getFileNamesByFolder(
         currentFolder
       );
 
+  /* ダミーファイル除外 */
+  files =
+    files.filter(
+      name =>
+        name !== "__init__"
+    );
+
+  /* ファイル0件 */
   if (
     files.length === 0
   ) {
@@ -177,6 +185,9 @@ async function refreshFiles() {
     renderTable(
       tableData
     );
+
+    currentFileName =
+      "";
 
     return;
 
@@ -209,6 +220,18 @@ async function refreshFiles() {
       currentFileName
     );
 
+  if (!tableData) {
+
+    tableData = [
+
+      ["項目", "列1"],
+
+      ["", ""]
+
+    ];
+
+  }
+
   renderTable(
     tableData
   );
@@ -234,6 +257,23 @@ document
 
     currentFolder =
       name;
+
+    /* ダミーファイル */
+    await window.saveFile(
+
+      "__init__",
+
+      [
+
+        ["項目", "列1"],
+
+        ["", ""]
+
+      ],
+
+      currentFolder
+
+    );
 
     await refreshFolders();
 
@@ -303,3 +343,197 @@ document
 
   };
 
+/* =========================
+   保存
+========================= */
+document
+  .getElementById(
+    "saveButton"
+  )
+  .onclick = async () => {
+
+    if (
+      !currentFileName
+    )
+      return;
+
+    await window.saveFile(
+
+      currentFileName,
+
+      tableData,
+
+      currentFolder
+
+    );
+
+    console.log(
+      "保存完了"
+    );
+
+  };
+
+/* =========================
+   ファイル削除
+========================= */
+document
+  .getElementById(
+    "deleteFileButton"
+  )
+  .onclick = async () => {
+
+    if (
+      !currentFileName
+    )
+      return;
+
+    await window.deleteFile(
+      currentFileName
+    );
+
+    await refreshFiles();
+
+  };
+
+/* =========================
+   ファイル切替
+========================= */
+document
+  .getElementById(
+    "fileSelect"
+  )
+  .onchange = async (e) => {
+
+    currentFileName =
+      e.target.value;
+
+    tableData =
+      await window.loadFile(
+        currentFileName
+      );
+
+    if (!tableData) {
+
+      tableData = [
+
+        ["項目", "列1"],
+
+        ["", ""]
+
+      ];
+
+    }
+
+    renderTable(
+      tableData
+    );
+
+  };
+
+/* =========================
+   行追加
+========================= */
+document
+  .getElementById(
+    "addRowButton"
+  )
+  .onclick = () => {
+
+    addNewRow(
+      tableData
+    );
+
+    renderTable(
+      tableData
+    );
+
+  };
+
+/* =========================
+   行削除
+========================= */
+document
+  .getElementById(
+    "deleteRowButton"
+  )
+  .onclick = () => {
+
+    deleteLastRow(
+      tableData
+    );
+
+    renderTable(
+      tableData
+    );
+
+  };
+
+/* =========================
+   列追加
+========================= */
+document
+  .getElementById(
+    "addColumnButton"
+  )
+  .onclick = () => {
+
+    addNewColumn(
+      tableData
+    );
+
+    renderTable(
+      tableData
+    );
+
+  };
+
+/* =========================
+   列削除
+========================= */
+document
+  .getElementById(
+    "deleteColumnButton"
+  )
+  .onclick = () => {
+
+    deleteLastColumn(
+      tableData
+    );
+
+    renderTable(
+      tableData
+    );
+
+  };
+
+/* =========================
+   自動保存
+========================= */
+document.addEventListener(
+
+  "input",
+
+  async () => {
+
+    if (
+      !currentFileName
+    )
+      return;
+
+    await window.autoSaveFile(
+
+      currentFileName,
+
+      tableData,
+
+      currentFolder
+
+    );
+
+  }
+
+);
+
+console.log(
+  "app.js loaded"
+);
