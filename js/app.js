@@ -261,7 +261,7 @@ document
     /* ダミーファイル */
     await window.saveFile(
 
-      "_folder_init__",
+      "_folder_init",
 
       [
 
