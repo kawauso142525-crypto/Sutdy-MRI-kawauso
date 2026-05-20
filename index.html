@@ -2,10 +2,23 @@
 <html lang="ja">
 
 <head>
+
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Table Manager</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <title>
+    Table Manager
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  />
+
 </head>
 
 <body>
@@ -15,40 +28,61 @@
   ========================== -->
   <div id="navBar">
 
-    <button id="backBtn">←</button>
+    <button id="backBtn">
+      ←
+    </button>
 
-    <div id="title">Table Manager</div>
+    <div id="title">
+      Table Manager
+    </div>
 
-    <button id="actionBtn">＋</button>
+    <button id="actionBtn">
+      ＋
+    </button>
 
   </div>
 
   <!-- =========================
        FOLDER VIEW
   ========================== -->
-  <div id="folderView"></div>
+  <div id="folderView">
+  </div>
 
   <!-- =========================
        FILE VIEW
   ========================== -->
-  <div id="fileView" style="display:none;"></div>
+  <div
+    id="fileView"
+    style="display:none;"
+  >
+  </div>
 
   <!-- =========================
        TABLE VIEW
   ========================== -->
-  <div id="tableView" style="display:none;">
+  <div
+    id="tableView"
+    style="display:none;"
+  >
 
-    <div id="tableContainer"></div>
+    <div id="tableContainer">
+    </div>
 
   </div>
 
   <!-- =========================
        FIREBASE
   ========================== -->
-  <script type="module" src="firebase.js"></script>
+  <script
+    type="module"
+    src="firebase.js"
+  ></script>
 
   <!-- STORAGE -->
   <script src="storage.js"></script>
+
+  <!-- SUGGESTION -->
+  <script src="suggestion.js"></script>
 
   <!-- TABLE -->
   <script src="table.js"></script>
